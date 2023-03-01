@@ -229,7 +229,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 617071709}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -1135321017, guid: 9924e9e765f49e94296fb27cfaec272d, type: 3}
+  m_Script: {fileID: -1135321017, guid: b4e9033e4a986184bb515e7ce01596cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   allowHireViewerToRoster: 0
@@ -247,7 +247,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 617071709}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1046671827, guid: 9924e9e765f49e94296fb27cfaec272d, type: 3}
+  m_Script: {fileID: 1046671827, guid: b4e9033e4a986184bb515e7ce01596cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   controller: {fileID: 617071710}
@@ -1029,6 +1029,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -1281830835, guid: 9924e9e765f49e94296fb27cfaec272d, type: 3}
+  m_Script: {fileID: -1281830835, guid: b4e9033e4a986184bb515e7ce01596cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
