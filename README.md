@@ -22,7 +22,7 @@ Draft Your Viewers 2 is a mod for Kerbal Space Program 2. By authorizing the mod
 1. Download BepInEx for KSP, [available on Space Dock](https://spacedock.info/mod/3255/BepInEx%20for%20KSP%202).
 2. Follow BepInEx's install instructions. Luckily, it's pretty EZ!
 3. Download a release. Make sure you get one for your KSP 2 version.
-4. Copy the contensts of the zip file into `<KSP Folder>/BepInEx/plugins`
+4. Copy the contents of the zip file into `<KSP Folder>/BepInEx/plugins`
 
 ## Dev Requirements:
 - [Unity 2020.3.33f1](https://unity.com/releases/editor/whats-new/2020.3.33)
