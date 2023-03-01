@@ -70,3 +70,4 @@ crashlytics-build.properties
 # Mod-built asset bundles and assemblies
 /AssetBundles/
 /Assets/ModLib/
+/StageForRelease/

@@ -1,4 +1,3 @@
-![Draft Your Viewers 2](GitHubImages/Banner.png)
 # Draft Your Viewers 2
 ## By Nifty255
 
@@ -7,16 +6,6 @@ https://github.com/Nifty255/DraftYourViewers2 - Licensed under GPLv3
 Don't want to strand Jeb in space? Strand your viewers instead!
 
 Draft Your Viewers 2 is a mod for Kerbal Space Program 2. By authorizing the mod, it can get a list of viewers in your chat, and draft them into your Space Program any time you need them.
-
-## Features:
-- Draft a viewer as a Kerbal into your Roster
-- Draw a random viewer without drafting them
-- Block certain accounts by username or display name
-
-## Coming Soon:
-- Draft a viewer directly into your active craft
-- Customizable sounds
-- Support for KSP 2's built-in mod loader (when it's finished)
 
 ## How to Install:
 1. Download BepInEx for KSP, [available on Space Dock](https://spacedock.info/mod/3255/BepInEx%20for%20KSP%202).
