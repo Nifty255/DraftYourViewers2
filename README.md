@@ -1,5 +1,6 @@
 ![Draft Your Viewers 2](GitHubImages/Banner.png)
 # Draft Your Viewers 2
+## By Nifty255
 
 Don't want to strand Jeb in space? Strand your viewers instead!
 
