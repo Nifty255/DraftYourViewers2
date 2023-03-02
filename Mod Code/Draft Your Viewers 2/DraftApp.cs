@@ -34,8 +34,12 @@ namespace CodeNifty.DraftYourViewers2
 
         public DraftManager draftManager;
 
-        public GameObject container;
+        public GameObject Container;
         private GameObject currentPanel;
+
+        // Expand/Collapse
+        public GameObject AppExpandPanel;
+        public GameObject HeaderPanel;
 
         // Twitch Authorization
         public GameObject AuthPanel;
@@ -70,7 +74,21 @@ namespace CodeNifty.DraftYourViewers2
         public void OnCampaignLoaded(bool isLoaded)
         {
             StatusTextTyper.FullText = $"Ready to draft from: {streamerDisplayName}";
-            container.SetActive(isLoaded);
+            Container.SetActive(isLoaded);
+        }
+
+        public void OnAppExpand()
+        {
+            AppExpandPanel.SetActive(false);
+            HeaderPanel.SetActive(true);
+            currentPanel.SetActive(true);
+        }
+
+        public void OnAppCollapse()
+        {
+            HeaderPanel.SetActive(false);
+            currentPanel.SetActive(false);
+            AppExpandPanel.SetActive(true);
         }
 
         public void OnAuthorizeButtonClick()
