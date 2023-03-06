@@ -2,10 +2,11 @@
 using System;
 using System.IO;
 using UnityEngine;
+using CodeNifty.DraftYourViewers2.TwitchUtil;
 
 namespace CodeNifty.DraftYourViewers2
 {
-    public class UnityDummyDraftActorController : MonoBehaviour
+    public class UnityDummyDraftActorController : MonoBehaviour, ISavePathGetter
     {
         private static char slash = Path.DirectorySeparatorChar;
 
@@ -16,16 +17,19 @@ namespace CodeNifty.DraftYourViewers2
 
         public string fauxCampaignPath;
 
+        public string CurrentSavePath { get { return fauxCampaignPath; } }
+
         public DraftManager draftManager;
 
         private void Awake()
         {
             fauxCampaignPath = $"{Application.persistentDataPath}{slash}Saves{slash}SinglePlayer{slash}Default";
+            draftManager.savePathGetter = this;
         }
 
         public void OnLoadCampaign()
         {
-            draftManager.OnCampaignLoaded(fauxCampaignPath, (string kerbalGuid) => pretendKerbalExists);
+            draftManager.OnCampaignLoaded();
         }
 
         public void OnUnloadCampaign()
@@ -37,20 +41,25 @@ namespace CodeNifty.DraftYourViewers2
     {
         public UnityDummyDraftActorController controller;
 
+        public bool KerbalExists(Chatter viewer, string possibleGuid)
+        {
+            return controller.pretendKerbalExists;
+        }
+
         private void Start()
         {
             controller.draftManager.draftActor = this;
         }
-        public bool CanHireViewerToRoster()
+        public string CanHireViewerToRoster()
         {
             Logger.LogInfo("CALLED CanHireViewerToRoster");
-            return controller.allowHireViewerToRoster;
+            return controller.allowHireViewerToRoster ? "" : "Dummy controller said no sry.";
         }
 
-        public bool CanAddViewerToActiveCraft()
+        public string CanAddViewerToActiveCraft()
         {
             Logger.LogInfo("CALLED CanHireViewerToRoster");
-            return controller.allowAddViewerToActiveCraft;
+            return controller.allowAddViewerToActiveCraft ? "" : "Dummy controller said no sry.";
         }
 
         public string HireViewerToRoster(string viewer)

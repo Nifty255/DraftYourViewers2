@@ -1,14 +1,13 @@
 ﻿#if TARGET_KERBAL
 using System;
 using System.IO;
-using System.Linq;
 using UnityEngine;
 using KSP.Game;
 using KSP.Messages;
 
 namespace CodeNifty.DraftYourViewers2
 {
-    class SceneChangeListener : KerbalMonoBehaviour
+    class SceneChangeListener : KerbalMonoBehaviour, ISavePathGetter
     {
         private static char slash = Path.DirectorySeparatorChar;
 
@@ -16,12 +15,23 @@ namespace CodeNifty.DraftYourViewers2
 
         private SubscriptionHandle gameStateChangedHandler;
         private bool subscribed;
+        private bool sceneChanged;
 
-        private void Update()
+        public string CurrentSavePath { get; private set; }
+
+        private void FixedUpdate()
         {
-            if (Game == null || Game.Messages == null || subscribed) { return; }
-            subscribed = true;
-            gameStateChangedHandler = Game.Messages.Subscribe<GameStateChangedMessage>(new Action<MessageCenterMessage>(OnGameStateChanged));
+            if (!subscribed && Game != null && Game.Messages != null)
+            {
+                SubscribeToGameStateChanges();
+            }
+
+            if (sceneChanged && Game.SaveLoadManager.IsLoaded)
+            {
+                sceneChanged = false;
+                CurrentSavePath = $"{Application.persistentDataPath}{slash}Saves{slash}{Game.SessionManager.ActiveCampaignType}{slash}{Game.SessionManager.ActiveCampaignName}";
+                draftManager.OnCampaignLoaded();
+            }
         }
 
         private void OnDestroy()
@@ -29,33 +39,34 @@ namespace CodeNifty.DraftYourViewers2
             Game.Messages.Unsubscribe(ref gameStateChangedHandler);
         }
 
+        private void SubscribeToGameStateChanges()
+        {
+            subscribed = true;
+            gameStateChangedHandler = Game.Messages.Subscribe<GameStateChangedMessage>(new Action<MessageCenterMessage>(OnGameStateChanged));
+            Logger.LogInfo("Subscribed to game state changes.");
+        }
+
         public void OnGameStateChanged(MessageCenterMessage message)
         {
             if ((message is GameStateChangedMessage stateChangedMessage))
             {
-                if (
-                    stateChangedMessage.CurrentState == GameState.MainMenu &&
-                    stateChangedMessage.PreviousState != GameState.WarmUpLoading
-                )
+                switch(stateChangedMessage.CurrentState)
                 {
-                    draftManager.OnCampaignUnloaded();
-                } else if (
-                    stateChangedMessage.PreviousState == GameState.MainMenu &&
-                    stateChangedMessage.CurrentState != GameState.Invalid &&
-                    stateChangedMessage.CurrentState != GameState.WarmUpLoading
-                )
-                {
-                    draftManager.OnCampaignLoaded(
-                        $"{Application.persistentDataPath}{slash}Saves{Game.SessionManager.ActiveCampaignType}{slash}{Game.SessionManager.ActiveCampaignName}",
-                        (string id) =>
+                    case GameState.MainMenu:
+                        if (stateChangedMessage.PreviousState != GameState.WarmUpLoading)
                         {
-                            return Game.SessionManager.KerbalRosterManager.GetAllKerbals().Any(kerbal => kerbal.Id.ToString() == id);
+                            draftManager.OnCampaignUnloaded();
                         }
-                    );
+                        break;
+                    case GameState.Invalid:
+                    case GameState.WarmUpLoading:
+                        break;
+                    default:
+                        sceneChanged = true;
+                        break;
                 }
             }
         }
     }
 }
-
 #endif

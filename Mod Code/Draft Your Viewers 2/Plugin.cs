@@ -33,7 +33,6 @@ namespace CodeNifty.DraftYourViewers2
 
         private IEnumerator LoadApp()
         {
-            //string assetPath = $"{KSPUtil.ApplicationRootPath}{slash}GameData{slash}Mods{slash}Draft Your Viewers 2{slash}Assets.bundle";
             string assetPath = $"{Directory.GetCurrentDirectory()}{slash}BepInEx{slash}plugins{slash}Draft Your Viewers 2{slash}Asset.bundle";
             AssetBundleCreateRequest loadBundleOp = AssetBundle.LoadFromFileAsync(assetPath);
             yield return loadBundleOp;
@@ -55,6 +54,7 @@ namespace CodeNifty.DraftYourViewers2
 
             manager = package.GetComponent<DraftManager>();
             manager.draftActor = actor;
+            manager.savePathGetter = listener;
             listener.draftManager = manager;
         }
     }

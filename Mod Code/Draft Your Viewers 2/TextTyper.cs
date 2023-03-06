@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace CodeNifty.DraftYourViewers2
@@ -24,7 +25,7 @@ namespace CodeNifty.DraftYourViewers2
         private int currentCharacter = 0;
 
         private float timeSinceLastCharacter = 0f;
-        private const float charactersPerSecond = 30f;
+        private const float charactersPerSecond = 60f;
         private const float timeBetweenCharacters = 1f / charactersPerSecond;
 
         private float timeBetweenBlinks = 0.75f;
@@ -38,8 +39,9 @@ namespace CodeNifty.DraftYourViewers2
                 timeSinceLastCharacter += Time.deltaTime;
                 if (timeSinceLastCharacter >= timeBetweenCharacters)
                 {
-                    timeSinceLastCharacter -= timeBetweenCharacters;
-                    currentCharacter++;
+                    int charactersToAdd = (int)(timeSinceLastCharacter / timeBetweenCharacters);
+                    timeSinceLastCharacter -= timeBetweenCharacters * charactersToAdd;
+                    currentCharacter = Math.Min(currentCharacter + charactersToAdd, fullText.Length);
                     Target.text = fullText.Substring(0, currentCharacter) + Cursor;
                 }
 

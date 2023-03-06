@@ -25,11 +25,9 @@ namespace CodeNifty.DraftYourViewers2
 
         private string streamerUserId;
 
-        private string campaignPath;
-        Predicate<string> kerbalExistsTest;
-
         public AuthServerManager authServerManager;
         public IDraftActor draftActor;
+        public ISavePathGetter savePathGetter;
 
         public Action<string> AppOnStreamerAuthenticated;
         public Action<bool> AppOnCampaignLoaded;
@@ -42,7 +40,7 @@ namespace CodeNifty.DraftYourViewers2
 
         public void ClearSave()
         {
-            Save = FileManager.NewDraftSave(campaignPath, true);
+            Save = FileManager.NewDraftSave(savePathGetter.CurrentSavePath, true);
             Chatter.ClearCache();
         }
 
@@ -52,12 +50,10 @@ namespace CodeNifty.DraftYourViewers2
             streamerUserId = "";
         }
 
-        public void OnCampaignLoaded(string campaignPath, Predicate<string> kerbalExistsTest)
+        public void OnCampaignLoaded()
         {
-            Logger.LogInfo($"HECC, a campaign with the path \"{campaignPath}\" loaded!");
-            this.campaignPath = campaignPath;
-            Save = FileManager.LoadDraftSave(campaignPath);
-            this.kerbalExistsTest = kerbalExistsTest;
+            Logger.LogInfo($"HECC, a campaign with the path \"{savePathGetter.CurrentSavePath}\" loaded!");
+            Save = FileManager.LoadDraftSave(savePathGetter.CurrentSavePath);
             AppOnCampaignLoaded.Invoke(true);
         }
 
@@ -69,9 +65,10 @@ namespace CodeNifty.DraftYourViewers2
 
         public void DraftViewerIntoActiveCraft(Action<string> onDraftComplete, Action<string> onDraftFailed)
         {
-            if (!draftActor.CanAddViewerToActiveCraft())
+            string cantReason = draftActor.CanAddViewerToActiveCraft();
+            if (cantReason != "")
             {
-                onDraftFailed.Invoke("Can't draft into the active craft.\n\nIs there space available?");
+                onDraftFailed.Invoke($"Can't draft into the active craft.\n\n{cantReason}");
                 return;
             }
             GetRandomViewer(
@@ -81,7 +78,7 @@ namespace CodeNifty.DraftYourViewers2
                     string kerbalId = draftActor.AddViewerToActiveCraft(kerbalName);
                     Save.draftedUserIds.Remove(viewer.ID);
                     Save.draftedUserIds.Add(viewer.ID, kerbalId);
-                    FileManager.SaveDraftSave(campaignPath, Save);
+                    FileManager.SaveDraftSave(savePathGetter.CurrentSavePath, Save);
                     onDraftComplete.Invoke(kerbalName);
                 }),
                 onDraftFailed,
@@ -91,7 +88,7 @@ namespace CodeNifty.DraftYourViewers2
                         !Config.blockedUsernames.Contains(viewer.DisplayName) &&
                         (
                             !Save.draftedUserIds.ContainsKey(viewer.ID) ||
-                            !kerbalExistsTest(Save.draftedUserIds[viewer.ID])
+                            !draftActor.KerbalExists(viewer, Save.draftedUserIds[viewer.ID])
                         );
                 }
             );
@@ -99,9 +96,10 @@ namespace CodeNifty.DraftYourViewers2
 
         public void DraftViewerIntoRoster(Action<string> onDraftComplete, Action<string> onDraftFailed)
         {
-            if (!draftActor.CanHireViewerToRoster())
+            string cantReason = draftActor.CanHireViewerToRoster();
+            if (cantReason != "")
             {
-                onDraftFailed.Invoke("Can't hire to the roster.\n\nDo you have the funds? Any openings available?");
+                onDraftFailed.Invoke($"Can't hire to the roster.\n\n{cantReason}");
                 return;
             }
             GetRandomViewer(
@@ -111,7 +109,7 @@ namespace CodeNifty.DraftYourViewers2
                     string kerbalId = draftActor.HireViewerToRoster(kerbalName);
                     Save.draftedUserIds.Remove(viewer.ID);
                     Save.draftedUserIds.Add(viewer.ID, kerbalId);
-                    FileManager.SaveDraftSave(campaignPath, Save);
+                    FileManager.SaveDraftSave(savePathGetter.CurrentSavePath, Save);
                     onDraftComplete.Invoke(kerbalName);
                 }),
                 onDraftFailed,
@@ -121,7 +119,7 @@ namespace CodeNifty.DraftYourViewers2
                         !Config.blockedUsernames.Contains(viewer.DisplayName) &&
                         (
                             !Save.draftedUserIds.ContainsKey(viewer.ID) ||
-                            !kerbalExistsTest(Save.draftedUserIds[viewer.ID])
+                            !draftActor.KerbalExists(viewer, Save.draftedUserIds[viewer.ID])
                         );
                 }
             );
@@ -133,7 +131,7 @@ namespace CodeNifty.DraftYourViewers2
                 new Action<Chatter>((Chatter viewer) =>
                 {
                     Save.drawnUserIds.Add(viewer.ID);
-                    FileManager.SaveDraftSave(campaignPath, Save);
+                    FileManager.SaveDraftSave(savePathGetter.CurrentSavePath, Save);
                     onDrawingComplete.Invoke(viewer.DisplayName);
                 }),
                 onDrawingFailed,
